@@ -8,6 +8,7 @@ class IdentliteApplicationTests {
 
 	@Test
 	void contextLoads() {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 }
