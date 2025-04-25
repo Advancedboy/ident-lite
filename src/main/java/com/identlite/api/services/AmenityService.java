@@ -1,6 +1,5 @@
 package com.identlite.api.services;
 
-import com.identlite.api.dto.AmenityDto;
 import com.identlite.api.dto.AmenityRequestDto;
 import com.identlite.api.models.Amenity;
 import java.util.List;

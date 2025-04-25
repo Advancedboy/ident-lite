@@ -3,7 +3,6 @@ package com.identlite.api.services;
 
 import com.identlite.api.dto.HotelDto;
 import com.identlite.api.dto.HotelRequestDto;
-import com.identlite.api.models.Hotel;
 import java.util.List;
 import java.util.Optional;
 

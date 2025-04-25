@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
         List<Booking> bookings = bookingRepository.findByUserId(userId);
         return bookings.stream()
                 .map(booking -> modelMapper.map(booking, BookingDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -99,7 +101,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

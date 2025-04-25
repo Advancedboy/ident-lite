@@ -6,7 +6,6 @@ import com.identlite.api.mappers.AmenityMapper;
 import com.identlite.api.models.Amenity;
 import com.identlite.api.services.AmenityService;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,11 +48,11 @@ public class AmenityController {
     @GetMapping
     public ResponseEntity<List<AmenityDto>> getAllAmenities() {
         List<Amenity> amenities = amenityService.getAllAmenities();
-        List<AmenityDto> amenityDtos = amenities.stream()
+        List<AmenityDto> amenityDto = amenities.stream()
                 .map(AmenityMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
 
-        return ResponseEntity.ok(amenityDtos);
+        return ResponseEntity.ok(amenityDto);
     }
 
 

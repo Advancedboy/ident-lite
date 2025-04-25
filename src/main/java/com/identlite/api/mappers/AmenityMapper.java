@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AmenityMapper {
+    private AmenityMapper() {}
 
     public static Amenity toEntity(AmenityRequestDto dto) {
         return Amenity.builder()
