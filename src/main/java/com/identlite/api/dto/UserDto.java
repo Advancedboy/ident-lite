@@ -1,21 +1,27 @@
 package com.identlite.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.time.LocalDate;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserDto {
-    private Long id;
-    private String username;
+    private String name;
     private String email;
-    @JsonIgnore
-    public String password;
-    @JsonManagedReference
-    private List<BookingDto> bookings;
+    private List<UserBookingDto> bookings;
+
+    @Data
+    public static class UserBookingDto {
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private BookingHotelDto hotel;
+    }
+
+    @Data
+    public static class BookingHotelDto {
+        private String name;
+        private String address;
+        private String city;
+        private String description;
+    }
 }
