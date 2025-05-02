@@ -19,6 +19,6 @@ public interface UserMapper {
     default List<UserDto.UserBookingDto> mapBookings(List<Booking> bookings) {
         return bookings.stream()
                 .map(this::toUserBookingDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
