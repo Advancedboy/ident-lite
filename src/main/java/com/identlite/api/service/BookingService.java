@@ -28,7 +28,7 @@ public class BookingService {
     public List<BookingDto> findAll() {
         return bookingRepository.findAll().stream()
                 .map(bookingMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Booking findById(Long id) {

@@ -36,7 +36,7 @@ public class UserService {
         }
         return bookingRepository.findByUserId(userId).stream()
                 .map(bookingMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<User> getAllUsers() {
