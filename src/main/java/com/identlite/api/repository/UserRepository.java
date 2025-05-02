@@ -1,6 +1,5 @@
 package com.identlite.api.repository;
 
-import com.identlite.api.dto.UserDto;
 import com.identlite.api.model.Booking;
 import com.identlite.api.model.User;
 import java.util.List;
