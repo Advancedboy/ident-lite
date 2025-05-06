@@ -7,7 +7,6 @@ import com.identlite.api.dto.mapping.BookingMapper;
 import com.identlite.api.model.Booking;
 import com.identlite.api.service.BookingService;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

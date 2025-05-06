@@ -5,7 +5,6 @@ import com.identlite.api.dto.mapping.HotelMapper;
 import com.identlite.api.model.Hotel;
 import com.identlite.api.service.HotelService;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
