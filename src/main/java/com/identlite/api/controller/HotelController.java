@@ -31,7 +31,7 @@ public class HotelController {
     public ResponseEntity<List<HotelDto>> getAllHotels() {
         List<HotelDto> hotelDtos = hotelService.getAllHotels().stream()
                 .map(hotelMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.ok(hotelDtos);
     }
 

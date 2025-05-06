@@ -22,8 +22,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final HotelRepository hotelRepository;
     private final BookingRepository bookingRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {

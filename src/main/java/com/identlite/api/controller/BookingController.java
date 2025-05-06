@@ -32,7 +32,7 @@ public class BookingController {
     public ResponseEntity<List<BookingDto>> getAllBookings() {
         List<BookingDto> bookingDtos = bookingService.getAllBookings().stream()
                 .map(bookingMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.ok(bookingDtos);
     }
 
