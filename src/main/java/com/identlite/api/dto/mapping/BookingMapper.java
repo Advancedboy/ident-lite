@@ -1,16 +1,22 @@
 package com.identlite.api.dto.mapping;
 
 import com.identlite.api.dto.BookingDto;
-import com.identlite.api.dto.UserDto;
 import com.identlite.api.model.Booking;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {HotelMapper.class, UserMapper.class})
+
+@Mapper(componentModel = "spring")
 public interface BookingMapper {
 
-    @Mapping(target = "hotel", source = "hotel")
     BookingDto toDto(Booking booking);
 
-    UserDto.UserBookingDto toUserBookingDto(Booking booking);
+    List<BookingDto> toDto(List<Booking> bookings);
+
+
+    @Mapping(target = "hotel", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    Booking toEntity(BookingDto bookingDto);
 }
+

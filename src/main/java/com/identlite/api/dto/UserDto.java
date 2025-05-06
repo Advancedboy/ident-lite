@@ -1,27 +1,21 @@
 package com.identlite.api.dto;
 
-import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
 
 @Data
 public class UserDto {
+    private Long id;
     private String name;
     private String email;
-    private List<UserBookingDto> bookings;
+    private List<BookingDto> bookings;
 
-    @Data
-    public static class UserBookingDto {
-        private LocalDate startDate;
-        private LocalDate endDate;
-        private BookingHotelDto hotel;
-    }
+    public UserDto()
+    {}
 
-    @Data
-    public static class BookingHotelDto {
-        private String name;
-        private String address;
-        private String city;
-        private String description;
+    public UserDto(Long id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
     }
 }

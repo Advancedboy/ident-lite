@@ -1,67 +1,64 @@
 package com.identlite.api.service;
 
 import com.identlite.api.dto.BookingDto;
+import com.identlite.api.dto.CreateBookingDto;
+import com.identlite.api.dto.UpdateBookingDto;
 import com.identlite.api.dto.mapping.BookingMapper;
-import com.identlite.api.exceptions.BookingNotFoundException;
 import com.identlite.api.model.Booking;
+import com.identlite.api.model.Hotel;
+import com.identlite.api.model.User;
 import com.identlite.api.repository.BookingRepository;
-import jakarta.transaction.Transactional;
+import com.identlite.api.repository.HotelRepository;
+import com.identlite.api.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Data
 @Service
+@RequiredArgsConstructor
 public class BookingService {
     private final BookingRepository bookingRepository;
+    private final HotelRepository hotelRepository;
+    private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
 
-    @Transactional
-    public BookingDto getBookingById(Long id) {
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    public Booking getBookingById(Long id) {
         return bookingRepository.findById(id)
-                .map(bookingMapper::toDto)
-                .orElseThrow(() -> new BookingNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found with id " + id));
     }
 
-    public List<BookingDto> findAll() {
-        return bookingRepository.findAll().stream()
-                .map(bookingMapper::toDto)
-                .toList();
+    public Booking createBooking(CreateBookingDto dto) {
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Hotel hotel = hotelRepository.findById(dto.getHotelId())
+                .orElseThrow(() -> new RuntimeException("Hotel not found"));
+
+        Booking booking = new Booking();
+        booking.setStartDate(dto.getStartDate());
+        booking.setEndDate(dto.getEndDate());
+        booking.setUser(user);
+        booking.setHotel(hotel);
+
+        return bookingRepository.save(booking);
     }
 
-    public Booking findById(Long id) {
-        return bookingRepository.findById(id)
-                .orElse(null);
+
+    public Booking updateBooking(Long id, UpdateBookingDto updateBookingDto) {
+        Booking booking = getBookingById(id);
+        booking.setStartDate(updateBookingDto.getStartDate());
+        booking.setEndDate(updateBookingDto.getEndDate());
+
+        return bookingRepository.save(booking);
     }
 
-    public void createBooking(Booking booking) {
-        bookingRepository.save(booking);
-    }
-
-    public Booking updateBooking(Long id, Booking updatedBooking) {
-        Optional<Booking> booking = bookingRepository.findById(id);
-
-        if (booking.isEmpty()) {
-            return null;
-        }
-
-        Booking bookingToUpdate = booking.get();
-
-        bookingToUpdate.setUser(updatedBooking.getUser());
-        bookingToUpdate.setHotel(updatedBooking.getHotel());
-        bookingToUpdate.setStartDate(updatedBooking.getStartDate());
-        bookingToUpdate.setEndDate(updatedBooking.getEndDate());
-
-        return bookingRepository.save(bookingToUpdate);
-    }
-
-    public boolean deleteBookingById(long id) {
-        if (!bookingRepository.existsById(id)) {
-            return false;
-        }
-        bookingRepository.deleteById(id);
-        return true;
+    public void deleteBooking(Long id) {
+        Booking booking = getBookingById(id);
+        bookingRepository.delete(booking);
     }
 }

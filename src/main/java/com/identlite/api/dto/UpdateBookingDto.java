@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class BookingDto {
-    private Long hotelId;
+public class UpdateBookingDto {
     private LocalDate startDate;
     private LocalDate endDate;
 }
+

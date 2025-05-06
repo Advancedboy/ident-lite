@@ -1,5 +1,6 @@
 package com.identlite.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -37,4 +38,9 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("hotel-bookings")
     private List<Booking> bookings = new ArrayList<>();
+
+    @JsonIgnore
+    public List<Booking> getBookings() {
+        return bookings;
+    }
 }

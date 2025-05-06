@@ -3,51 +3,54 @@ package com.identlite.api.service;
 import com.identlite.api.model.Hotel;
 import com.identlite.api.repository.HotelRepository;
 import java.util.List;
-import java.util.Optional;
-import lombok.Data;
+import java.util.NoSuchElementException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Data
 @Service
+@RequiredArgsConstructor
 public class HotelService {
+
     private final HotelRepository hotelRepository;
+
+    @Transactional
+    @Retryable(value = JpaOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 100))
+    public Hotel createHotel(Hotel hotel) {
+        return hotelRepository.save(hotel);
+    }
+
+    @Transactional
+    @Retryable(value = JpaOptimisticLockingFailureException.class,
+            maxAttempts = 3, backoff = @Backoff(delay = 100))
+    public Hotel updateHotel(Long id, Hotel hotel) {
+        Hotel existingHotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Hotel not found with id: " + id));
+        existingHotel.setName(hotel.getName());
+        existingHotel.setAddress(hotel.getAddress());
+        existingHotel.setCity(hotel.getCity());
+        existingHotel.setDescription(hotel.getDescription());
+        return hotelRepository.save(existingHotel);
+    }
+
+    @Transactional
+    public void deleteHotel(Long id) {
+        if (!hotelRepository.existsById(id)) {
+            throw new NoSuchElementException("Hotel not found with id: " + id);
+        }
+        hotelRepository.deleteById(id);
+    }
+
+    public Hotel getHotelById(Long id) {
+        return hotelRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Hotel not found with id: " + id));
+    }
 
     public List<Hotel> getAllHotels() {
         return hotelRepository.findAll();
-    }
-
-    public Hotel findById(long id) {
-        return hotelRepository.findById(id)
-                .orElse(null);
-    }
-
-
-    public void createHotel(Hotel hotel) {
-        hotelRepository.save(hotel);
-    }
-
-    public Hotel updateHotel(Long id, Hotel updatedHotel) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
-
-        if (hotel.isEmpty()) {
-            return null;
-        }
-
-        Hotel hotelToUpdate = hotel.get();
-
-        hotelToUpdate.setName(updatedHotel.getName());
-        hotelToUpdate.setAddress(updatedHotel.getAddress());
-        hotelToUpdate.setCity(updatedHotel.getCity());
-        hotelToUpdate.setDescription(updatedHotel.getDescription());
-
-        return hotelRepository.save(hotelToUpdate);
-    }
-
-    public boolean deleteHotelById(long id) {
-        if (!hotelRepository.existsById(id)) {
-            return false;
-        }
-        hotelRepository.deleteById(id);
-        return true;
     }
 }
