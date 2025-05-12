@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookingCache {
     private static final Logger logger = LoggerFactory.getLogger(BookingCache.class);
-    private static final long TTL_MILLIS = 60 * 1000;
+    private static final long TTL_MILLIS = 60000L;
 
     private final Map<String, CacheEntry> cache = new HashMap<>();
 
