@@ -1,6 +1,8 @@
 package com.identlite.api.cache;
 
 import com.identlite.api.model.User;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,7 @@ public class BookingCache {
     public List<User> getFromCache(String key) {
         if (!cache.containsKey(key)) {
             logger.info("Ключ '{}' не найден в кэше", key);
-            return null;
+            return Collections.emptyList();
         }
 
         CacheEntry entry = cache.get(key);
@@ -40,7 +42,7 @@ public class BookingCache {
                     age,
                     TTL_MILLIS);
             cache.remove(key);
-            return null;
+            return Collections.emptyList();
         }
 
         logger.info("Данные по ключу '{}' найдены в кэше (возраст: {} мс)", key, age);
@@ -53,7 +55,17 @@ public class BookingCache {
     }
 
     public boolean contains(String key) {
-        return getFromCache(key) != null;
+        if (!cache.containsKey(key)) {
+            return false;
+        }
+
+        CacheEntry entry = cache.get(key);
+        long age = System.currentTimeMillis() - entry.timestamp;
+        if (age > TTL_MILLIS) {
+            cache.remove(key);
+            return false;
+        }
+        return true;
     }
 
     public void cleanCache() {

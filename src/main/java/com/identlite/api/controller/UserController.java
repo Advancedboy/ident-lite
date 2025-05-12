@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
@@ -57,14 +60,17 @@ public class UserController {
         }
 
         try {
-            System.out.println("Обращение к БД... 3 секунды");
+            logger.info("Обращение к БД... 3 секунды");
             Thread.sleep(2000);
         } catch (InterruptedException e) {
+            logger.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
 
         List<User> users = userRepository.findUserWithBookingsInPeriod(startDate, endDate, hotelId);
         cacheService.putInCache(cacheKey, users);
+        logger.info("Результат запроса сохранен в кэш по ключу: {}", cacheKey);
+
         return users;
     }
 
