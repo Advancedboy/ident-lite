@@ -33,10 +33,10 @@ public class BookingService {
     }
 
     public Booking createBooking(CreateBookingDto dto) {
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(dto.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Hotel hotel = hotelRepository.findById(dto.getHotelId())
+        Hotel hotel = hotelRepository.findById(dto.getHotel().getId())
                 .orElseThrow(() -> new RuntimeException("Hotel not found"));
 
         Booking booking = new Booking();

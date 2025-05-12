@@ -45,7 +45,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Hotel hotel = hotelRepository.findById(bookingDto.getHotelId())
+        Hotel hotel = hotelRepository.findById(bookingDto.getHotel().getId())
                 .orElseThrow(() -> new RuntimeException("Hotel not found"));
 
         Booking booking = new Booking();

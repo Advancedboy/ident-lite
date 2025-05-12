@@ -1,5 +1,6 @@
 package com.identlite.api.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -17,5 +18,6 @@ public class UserDto {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.bookings = new ArrayList<>();
     }
 }

@@ -1,12 +1,15 @@
 package com.identlite.api.controller;
 
+import com.identlite.api.cache.BookingCache;
 import com.identlite.api.dto.BookingDto;
 import com.identlite.api.dto.CreateUserDto;
 import com.identlite.api.dto.UserDto;
 import com.identlite.api.dto.mapping.UserMapper;
 import com.identlite.api.model.User;
+import com.identlite.api.repository.UserRepository;
 import com.identlite.api.service.UserService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -29,6 +33,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final BookingCache cacheService;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
@@ -36,6 +42,30 @@ public class UserController {
                 .map(userMapper::toDto)
                 .toList();
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/with-bookings")
+    public List<User> getUsersWithBookings(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            @RequestParam(required = false) Long hotelId) {
+
+        String cacheKey = buildCacheKey(startDate, endDate, hotelId);
+
+        if (cacheService.contains(cacheKey)) {
+            return cacheService.getFromCache(cacheKey);
+        }
+
+        try {
+            System.out.println("Обращение к БД... 3 секунды");
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        List<User> users = userRepository.findUserWithBookingsInPeriod(startDate, endDate, hotelId);
+        cacheService.putInCache(cacheKey, users);
+        return users;
     }
 
     @GetMapping("/{id}")
@@ -74,5 +104,14 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/cache/clear")
+    public void clearCache() {
+        cacheService.cleanCache();
+    }
+
+    private String buildCacheKey(LocalDate startDate, LocalDate endDate, Long hotelId) {
+        return startDate + "_" + endDate + "_" + (hotelId != null ? hotelId : "any");
     }
 }
