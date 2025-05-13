@@ -1,9 +1,8 @@
 package com.identlite.api.cache;
 
 import com.identlite.api.model.User;
-
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -14,8 +13,20 @@ import org.springframework.stereotype.Component;
 public class BookingCache {
     private static final Logger logger = LoggerFactory.getLogger(BookingCache.class);
     private static final long TTL_MILLIS = 60000L;
+    private static final int MAX_SIZE = 1;
 
-    private final Map<String, CacheEntry> cache = new HashMap<>();
+    private final Map<String, CacheEntry> cache = new LinkedHashMap<String, CacheEntry>(16,
+            0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, CacheEntry> eldest) {
+            boolean shouldRemove = size() > MAX_SIZE;
+            if (shouldRemove) {
+                logger.info("Кэш переполнен. Удаляется самая старая запись с ключом '{}'",
+                        eldest.getKey());
+            }
+            return shouldRemove;
+        }
+    };
 
     private static class CacheEntry {
         List<User> data;
