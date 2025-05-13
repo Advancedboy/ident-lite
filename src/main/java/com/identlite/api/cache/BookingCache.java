@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class BookingCache {
     private static final Logger logger = LoggerFactory.getLogger(BookingCache.class);
     private static final long TTL_MILLIS = 60000L;
-    private static final int MAX_SIZE = 1;
+    private static final int MAX_SIZE = 5;
 
     private final Map<String, CacheEntry> cache = new LinkedHashMap<String, CacheEntry>(16,
             0.75f, true) {

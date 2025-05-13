@@ -7,9 +7,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 public class AdminController {
 
-    private static final String LOG_DIR = "logs";
+    private static final Path LOG_DIR = Paths.get("logs").toAbsolutePath().normalize();
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Operation(summary = "Получить лог-файл за указанную дату",
             description = "Возвращает лог-файл за указанную дату в формате 'yyyy-MM-dd'.")
@@ -38,27 +42,24 @@ public class AdminController {
             @RequestParam String date) throws IOException {
 
         try {
-            // Преобразуем строку в дату, чтобы проверить корректность формата
-            LocalDate.parse(date);
+            LocalDate parsedDate = LocalDate.parse(date, DATE_FORMATTER);
 
-            // Формируем имя файла лога на основе даты
-            String fileName = "app-" + date + ".log";
-            Path logPath = Paths.get(LOG_DIR, fileName);
+            // Construct a safe file name based on a validated date
+            String fileName = "app-" + parsedDate.format(DATE_FORMATTER) + ".log";
+            Path logPath = LOG_DIR.resolve(fileName).normalize();
 
-            // Проверка существования файла
-            File logFile = logPath.toFile();
-            if (!logFile.exists()) {
-                return ResponseEntity.notFound().build();  // Возвращаем 404, если файл не найден
+            // Ensure the file is within the allowed directory
+            if (!logPath.startsWith(LOG_DIR) || !Files.exists(logPath)) {
+                return ResponseEntity.notFound().build();
             }
 
-            // Создаем ресурс для лог-файла
-            Resource fileResource = new FileSystemResource(logFile);
+            Resource fileResource = new FileSystemResource(logPath.toFile());
 
             return ResponseEntity.ok()
                     .header("Content-Disposition", "attachment; filename=" + fileName)
                     .body(fileResource);
-        } catch (Exception e) {
-            // Возвращаем ошибку, если дата была в неверном формате
+
+        } catch (DateTimeParseException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
