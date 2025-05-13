@@ -1,7 +1,6 @@
 package com.identlite.api.security;
 
 import com.identlite.api.exceptions.LoggingAspectException;
-import lombok.extern.java.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
