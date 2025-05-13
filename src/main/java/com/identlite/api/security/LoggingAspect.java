@@ -1,5 +1,6 @@
 package com.identlite.api.security;
 
+import com.identlite.api.exceptions.CustomNotFoundException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,15 +32,24 @@ public class LoggingAspect {
 
             logger.info("Метод {} завершён за {} мс. Результат: {}", method, time, result);
             return result;
+        } catch (RuntimeException | Error ex) {
+            long time = System.currentTimeMillis() - start;
+
+            logger.error("Метод {} выбросил исключение через {} мс: {}", method,
+                    time,
+                    ex.getMessage(),
+                    ex);
+            throw ex; // сохраняем оригинальное поведение
         } catch (Throwable ex) {
             long time = System.currentTimeMillis() - start;
 
-            logger.error("Метод {} выбросил исключение через {} мс: {}",
-                    method, time, ex.getMessage(), ex);
-
-            // Оборачиваем в unchecked exception с контекстом
-            throw new RuntimeException("Ошибка в методе " + method + " после " + time + " мс", ex);
+            logger.error("Метод {} выбросил проверяемое исключение через {} мс: {}", method,
+                    time,
+                    ex.getMessage(),
+                    ex);
+            throw new RuntimeException("Ошибка при выполнении метода " + method, ex); // оборачиваем
         }
     }
+
 
 }
