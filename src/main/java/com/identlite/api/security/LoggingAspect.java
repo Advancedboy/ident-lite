@@ -18,7 +18,7 @@ public class LoggingAspect {
     public void controllerMethods() {}
 
     @Around("controllerMethods()")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) {
         String method = joinPoint.getSignature().toShortString();
         Object[] args = joinPoint.getArgs();
 
@@ -35,11 +35,11 @@ public class LoggingAspect {
             long time = System.currentTimeMillis() - start;
 
             logger.error("Метод {} выбросил исключение через {} мс: {}",
-                    method,
-                    time,
-                    ex.getMessage(),
-                    ex);
-            throw ex;
+                    method, time, ex.getMessage(), ex);
+
+            // Оборачиваем в unchecked exception с контекстом
+            throw new RuntimeException("Ошибка в методе " + method + " после " + time + " мс", ex);
         }
     }
+
 }
