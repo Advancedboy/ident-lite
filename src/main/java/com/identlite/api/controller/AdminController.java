@@ -39,7 +39,7 @@ public class AdminController {
     @GetMapping("/logs")
     public ResponseEntity<Resource> getLogFile(
             @Parameter(description = "Дата в формате yyyy-MM-dd", required = true)
-            @RequestParam String date) throws IOException {
+            @RequestParam String date) {
 
         try {
             LocalDate parsedDate = LocalDate.parse(date, DATE_FORMATTER);
