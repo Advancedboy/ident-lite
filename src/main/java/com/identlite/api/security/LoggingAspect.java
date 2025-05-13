@@ -1,6 +1,7 @@
 package com.identlite.api.security;
 
 import com.identlite.api.exceptions.LoggingAspectException;
+import lombok.extern.java.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -27,6 +28,10 @@ public class LoggingAspect {
 
         long start = System.currentTimeMillis();
         try {
+            if (method.contains("sensitiveOperation")) {
+                throw new LoggingAspectException("Вызов запрещённого метода: " + method);
+            }
+
             Object result = joinPoint.proceed();
             long time = System.currentTimeMillis() - start;
 
@@ -36,7 +41,10 @@ public class LoggingAspect {
             long time = System.currentTimeMillis() - start;
 
             logger.error("Метод {} завершился с ошибкой через {} мс: {}", method, time, ex.getMessage(), ex);
-            throw new LoggingAspectException("Ошибка при выполнении метода " + method, ex);
+            throw new LoggingAspectException("Ошибка при выполнении метода " + method);
+        } finally {
+            logger.info("Метод {} завершен.", method);
         }
     }
+
 }
