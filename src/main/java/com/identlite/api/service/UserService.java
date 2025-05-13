@@ -3,6 +3,7 @@ package com.identlite.api.service;
 import com.identlite.api.dto.BookingDto;
 import com.identlite.api.dto.CreateUserDto;
 import com.identlite.api.dto.UserDto;
+import com.identlite.api.exceptions.EmailAlreadyExistsException;
 import com.identlite.api.model.Booking;
 import com.identlite.api.model.Hotel;
 import com.identlite.api.model.User;
@@ -21,7 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final HotelRepository hotelRepository;
     private final BookingRepository bookingRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -33,11 +34,17 @@ public class UserService {
     }
 
     public User createUser(CreateUserDto dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
+
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         user.setPassword(hashedPassword);
+
         return userRepository.save(user);
     }
 

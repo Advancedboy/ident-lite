@@ -1,6 +1,6 @@
 package com.identlite.api.security;
 
-import com.identlite.api.exceptions.LoggingAspectException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -8,6 +8,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
@@ -19,31 +22,34 @@ public class LoggingAspect {
     public void controllerMethods() {}
 
     @Around("controllerMethods()")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint) {
-        String method = joinPoint.getSignature().toShortString();
-        Object[] args = joinPoint.getArgs();
-
-        logger.info("Вызов метода: {} с аргументами: {}", method, args);
-
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
+        HttpServletResponse response = getResponse();
+
         try {
-            if (method.contains("sensitiveOperation")) {
-                throw new LoggingAspectException("Вызов запрещённого метода: " + method);
-            }
-
             Object result = joinPoint.proceed();
-            long time = System.currentTimeMillis() - start;
+            long executionTime = System.currentTimeMillis() - start;
 
-            logger.info("Метод {} завершён за {} мс. Результат: {}", method, time, result);
+            int status = response != null ? response.getStatus() : -1;
+            logger.info("Метод {} выполнен за {} мс. HTTP статус: {}",
+                    joinPoint.getSignature(), executionTime, status);
+
             return result;
-        } catch (Throwable ex) {
-            long time = System.currentTimeMillis() - start;
 
-            logger.error("Метод {} завершился с ошибкой через {} мс: {}", method, time, ex.getMessage(), ex);
-            throw new LoggingAspectException("Ошибка при выполнении метода " + method);
-        } finally {
-            logger.info("Метод {} завершен.", method);
+        } catch (Exception e) {
+            int status = response != null ? response.getStatus() : -1;
+            logger.error("Ошибка в методе {}. HTTP статус: {}. Сообщение: {}",
+                    joinPoint.getSignature(), status, e.getMessage(), e);
+
+            throw e;
         }
     }
 
+    private HttpServletResponse getResponse() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
+            return servletRequestAttributes.getResponse();
+        }
+        return null;
+    }
 }

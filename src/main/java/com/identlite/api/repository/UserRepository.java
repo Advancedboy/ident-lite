@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
+    boolean existsByEmail(String email);
+
     @Query(
         """
         SELECT DISTINCT u FROM User u

@@ -6,6 +6,7 @@ import com.identlite.api.model.Hotel;
 import com.identlite.api.service.HotelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,7 @@ public class HotelController {
     @Operation(summary = "Создать новый отель",
             description = "Создает новый отель")
     @PostMapping
-    public ResponseEntity<HotelDto> createHotel(@RequestBody HotelDto hotelDto) {
+    public ResponseEntity<HotelDto> createHotel(@RequestBody @Valid HotelDto hotelDto) {
         Hotel hotel = hotelMapper.toEntity(hotelDto);
         Hotel saved = hotelService.createHotel(hotel);
         return ResponseEntity.status(HttpStatus.CREATED).body(hotelMapper.toDto(saved));
@@ -60,7 +61,7 @@ public class HotelController {
             description = "Обновляет данные об отеле с перезаписью старых значений")
     @PutMapping("/{id}")
     public ResponseEntity<HotelDto> updateHotel(@PathVariable Long id,
-                                                @RequestBody HotelDto hotelDto) {
+                                                @RequestBody @Valid HotelDto hotelDto) {
         Hotel hotel = hotelMapper.toEntity(hotelDto);
         Hotel updated = hotelService.updateHotel(id, hotel);
         return ResponseEntity.ok(hotelMapper.toDto(updated));
@@ -70,7 +71,7 @@ public class HotelController {
             description = "Обновляет данные об отеле без перезаписи старых значений")
     @PatchMapping("/{id}")
     public ResponseEntity<HotelDto> partialUpdateHotel(@PathVariable Long id,
-                                                       @RequestBody HotelDto hotelDto) {
+                                                       @RequestBody @Valid HotelDto hotelDto) {
         Hotel existingHotel = hotelService.getHotelById(id);
 
         if (hotelDto.getName() != null) {

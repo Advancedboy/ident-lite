@@ -63,7 +63,7 @@ public class BookingController {
             description = "Обновляет данные о бронировании с перезаписью старых значений")
     @PutMapping("/{id}")
     public ResponseEntity<BookingDto> updateBooking(@PathVariable Long id,
-                                                    @RequestBody
+                                                    @RequestBody @Valid
                                                     UpdateBookingDto updateBookingDto) {
         Booking updated = bookingService.updateBooking(id, updateBookingDto);
         return ResponseEntity.ok(bookingMapper.toDto(updated));
