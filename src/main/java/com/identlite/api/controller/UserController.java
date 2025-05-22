@@ -5,6 +5,7 @@ import com.identlite.api.dto.BookingDto;
 import com.identlite.api.dto.CreateUserDto;
 import com.identlite.api.dto.UserDto;
 import com.identlite.api.dto.mapping.UserMapper;
+import com.identlite.api.exceptions.UserNotFoundException;
 import com.identlite.api.model.User;
 import com.identlite.api.repository.UserRepository;
 import com.identlite.api.service.UserService;
@@ -19,22 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Пользователь", description = "Эндпоинты для работы с пользователем")
 @RequiredArgsConstructor
+@CrossOrigin("http://localhost:3000")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -53,6 +46,17 @@ public class UserController {
                 .toList();
         return ResponseEntity.ok(dtos);
     }
+
+    @Operation(summary = "Массовое создание пользователей", description = "Создает список пользователей за одну операцию")
+    @PostMapping("/bulk")
+    public ResponseEntity<List<UserDto>> createUsersBulk(@RequestBody @Valid List<CreateUserDto> createUserDtos) {
+        List<User> users = userService.createUsersBulk(createUserDtos);
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .toList();
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDtos);
+    }
+
 
     @Operation(summary
             = "Выбрать пользователей, у которых даты записей находятся в указанном диапазоне",

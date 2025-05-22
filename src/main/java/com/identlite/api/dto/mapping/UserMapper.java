@@ -1,10 +1,12 @@
 package com.identlite.api.dto.mapping;
 
+import com.identlite.api.dto.CreateUserDto;
 import com.identlite.api.dto.UserDto;
 import com.identlite.api.model.User;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {BookingMapper.class})
 public interface UserMapper {
@@ -15,5 +17,9 @@ public interface UserMapper {
     List<UserDto> toDto(List<User> users);
 
     User toEntity(UserDto dto);
+
+    User toEntity(CreateUserDto createUserDto);
+
+    List<User> toEntity(List<CreateUserDto> dto);
 }
 

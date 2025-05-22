@@ -33,6 +33,14 @@ public class BookingService {
     }
 
     public Booking createBooking(CreateBookingDto dto) {
+        if (dto.getEndDate().isBefore(dto.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
+
+        if (!dto.getEndDate().isAfter(dto.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
+
         User user = userRepository.findById(dto.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -47,7 +55,6 @@ public class BookingService {
 
         return bookingRepository.save(booking);
     }
-
 
     public Booking updateBooking(Long id, UpdateBookingDto updateBookingDto) {
         Booking booking = getBookingById(id);

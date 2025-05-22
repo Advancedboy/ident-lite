@@ -26,11 +26,22 @@ public class LoggingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } finally {
             long duration = System.currentTimeMillis() - start;
-            logger.info("{} {} -> статус: {} ({} мс)",
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    response.getStatus(),
-                    duration);
+            int status = response.getStatus();
+            String message = "{} {} -> статус: {} ({} мс)";
+
+            if (status == HttpServletResponse.SC_BAD_REQUEST) {
+                logger.error(message,
+                        request.getMethod(),
+                        request.getRequestURI(),
+                        status,
+                        duration);
+            } else {
+                logger.info(message,
+                        request.getMethod(),
+                        request.getRequestURI(),
+                        status,
+                        duration);
+            }
         }
     }
 }

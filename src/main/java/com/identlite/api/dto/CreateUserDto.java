@@ -17,4 +17,12 @@ public class CreateUserDto {
     @NotBlank(message = "Password is mandatory")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
+    public CreateUserDto(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public CreateUserDto() {}
 }

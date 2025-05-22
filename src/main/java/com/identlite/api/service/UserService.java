@@ -3,6 +3,7 @@ package com.identlite.api.service;
 import com.identlite.api.dto.BookingDto;
 import com.identlite.api.dto.CreateUserDto;
 import com.identlite.api.dto.UserDto;
+import com.identlite.api.dto.mapping.UserMapper;
 import com.identlite.api.exceptions.EmailAlreadyExistsException;
 import com.identlite.api.model.Booking;
 import com.identlite.api.model.Hotel;
@@ -23,6 +24,7 @@ public class UserService {
     private final HotelRepository hotelRepository;
     private final BookingRepository bookingRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -31,6 +33,11 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+    }
+
+    public List<User> createUsersBulk(List<CreateUserDto> createUserDtos) {
+        List<User> users = userMapper.toEntity(createUserDtos); // теперь работает
+        return userRepository.saveAll(users);
     }
 
     public User createUser(CreateUserDto dto) {
