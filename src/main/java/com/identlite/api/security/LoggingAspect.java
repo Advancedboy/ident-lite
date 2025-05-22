@@ -47,7 +47,6 @@ public class LoggingAspect {
         long start = System.currentTimeMillis();
         HttpServletResponse response = getResponse();
 
-        try {
             Object result = joinPoint.proceed();
             long executionTime = System.currentTimeMillis() - start;
 
@@ -56,21 +55,6 @@ public class LoggingAspect {
                     joinPoint.getSignature(), executionTime, status);
 
             return result;
-
-        } catch (Exception e) {
-            int status = response != null ? response.getStatus() : -1;
-            String methodName = joinPoint.getSignature().toShortString();
-
-            logger.error("Ошибка в методе {}. HTTP статус: {}. Сообщение: {}",
-                    methodName, status, e.getMessage(), e);
-
-            // Rethrow with context
-            throw new ControllerMethodExecutionException(
-                    String.format("Ошибка при выполнении метода %s. HTTP статус: %d", methodName, status),
-                    e
-            );
-        }
-
     }
 
     private HttpServletResponse getResponse() {
