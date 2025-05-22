@@ -58,10 +58,12 @@ public class LoggingAspect {
 
         } catch (Exception e) {
             int status = response != null ? response.getStatus() : -1;
+            String methodName = joinPoint.getSignature().toShortString();
             logger.error("Ошибка в методе {}. HTTP статус: {}. Сообщение: {}",
-                    joinPoint.getSignature(), status, e.getMessage(), e);
+                    methodName, status, e.getMessage(), e);
 
-            throw e;
+            throw new RuntimeException(String.format(
+                    "Исключение в методе %s. HTTP статус: %d", methodName, status), e);
         }
     }
 
