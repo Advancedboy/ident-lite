@@ -60,12 +60,17 @@ public class LoggingAspect {
         } catch (Exception e) {
             int status = response != null ? response.getStatus() : -1;
             String methodName = joinPoint.getSignature().toShortString();
-//            logger.error("Ошибка в методе {}. HTTP статус: {}. Сообщение: {}",
-//                    methodName, status, e.getMessage(), e);
 
-            throw new ControllerMethodExecutionException(String.format(
-                    "Исключение в методе %s. HTTP статус: %d", methodName, status), e);
+            logger.error("Ошибка в методе {}. HTTP статус: {}. Сообщение: {}",
+                    methodName, status, e.getMessage(), e);
+
+            // Rethrow with context
+            throw new ControllerMethodExecutionException(
+                    String.format("Ошибка при выполнении метода %s. HTTP статус: %d", methodName, status),
+                    e
+            );
         }
+
     }
 
     private HttpServletResponse getResponse() {
