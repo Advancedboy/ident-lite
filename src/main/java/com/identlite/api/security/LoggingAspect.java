@@ -1,5 +1,6 @@
 package com.identlite.api.security;
 
+import com.identlite.api.exceptions.ControllerMethodExecutionException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class LoggingAspect {
             logger.error("Ошибка в методе {}. HTTP статус: {}. Сообщение: {}",
                     methodName, status, e.getMessage(), e);
 
-            throw new RuntimeException(String.format(
+            throw new ControllerMethodExecutionException(String.format(
                     "Исключение в методе %s. HTTP статус: %d", methodName, status), e);
         }
     }
