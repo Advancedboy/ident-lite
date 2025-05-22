@@ -36,6 +36,7 @@ public class Booking {
     private LocalDate endDate;
 
     public Booking(long l, LocalDate localDate, LocalDate localDate1, User user1, Hotel hotel1) {
+        return;
     }
 
     public Booking() {}

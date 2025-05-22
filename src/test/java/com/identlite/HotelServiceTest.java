@@ -3,15 +3,12 @@ package com.identlite;
 import com.identlite.api.model.Hotel;
 import com.identlite.api.repository.HotelRepository;
 import com.identlite.api.service.HotelService;
-import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,18 +60,6 @@ class HotelServiceTest {
         verify(hotelRepository, times(1)).save(hotel);
     }
 
-//    @Test
-//    void createHotel_WhenOptimisticLockingFails_ShouldRetry() {
-//        when(hotelRepository.save(any(Hotel.class)))
-//                .thenThrow(new OptimisticLockingFailureException("Optimistic locking failed"))
-//                .thenReturn(hotel);
-//
-//        Hotel result = hotelService.createHotel(hotel);
-//
-//        assertNotNull(result);
-//        verify(hotelRepository, times(2)).save(hotel);
-//    }
-
     @Test
     void updateHotel_WithExistingId_ShouldUpdateHotel() {
         when(hotelRepository.findById(1L)).thenReturn(Optional.of(hotel));
@@ -86,19 +71,6 @@ class HotelServiceTest {
         assertEquals(updatedHotel.getName(), result.getName());
         verify(hotelRepository, times(1)).save(hotel);
     }
-
-//    @Test
-//    void updateHotel_WhenOptimisticLockingFails_ShouldRetry() {
-//        when(hotelRepository.findById(1L)).thenReturn(Optional.of(hotel));
-//        when(hotelRepository.save(any(Hotel.class)))
-//                .thenThrow(new OptimisticLockingFailureException("Optimistic locking failed"))
-//                .thenReturn(updatedHotel);
-//
-//        Hotel result = hotelService.updateHotel(1L, updatedHotel);
-//
-//        assertNotNull(result);
-//        verify(hotelRepository, times(2)).save(hotel);
-//    }
 
     // Остальные тесты остаются без изменений
     @Test

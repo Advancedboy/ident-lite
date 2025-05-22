@@ -6,7 +6,6 @@ import com.identlite.api.model.User;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {BookingMapper.class})
 public interface UserMapper {

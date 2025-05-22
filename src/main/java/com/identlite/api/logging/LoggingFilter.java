@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -30,13 +30,13 @@ public class LoggingFilter extends OncePerRequestFilter {
             String message = "{} {} -> статус: {} ({} мс)";
 
             if (status == HttpServletResponse.SC_BAD_REQUEST) {
-                logger.error(message,
+                LOGGER.error(message,
                         request.getMethod(),
                         request.getRequestURI(),
                         status,
                         duration);
             } else {
-                logger.info(message,
+                LOGGER.info(message,
                         request.getMethod(),
                         request.getRequestURI(),
                         status,

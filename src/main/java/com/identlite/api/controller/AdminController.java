@@ -39,7 +39,7 @@ public class AdminController {
                    @ApiResponse(responseCode = "404", description = "Файл не найден")
     })
     @GetMapping("/logs")
-    public ResponseEntity<?> getLogsByDate(@RequestParam String date) {
+    public ResponseEntity<String> getLogsByDate(@RequestParam String date) {
         try {
             LocalDate requestedDate = LocalDate.parse(date, DATE_FORMATTER);
             LocalDate today = LocalDate.now();
